@@ -1,0 +1,27 @@
+{
+  "name": "t3chfest2017-iot-platform",
+  "version": "1.0.0",
+  "description": "Demo of T3chFest 2017 talk: IoT Platform",
+  "main": "app.js",
+  "author": "Sema García",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/semagarcia/t3chfest2017-iot-platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/semagarcia/t3chfest2017-iot-platform/issues"
+  },
+  "homepage": "https://github.com/semagarcia/t3chfest2017-iot-platform#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "nodemon": "^1.11.0",
+    "rx-socket-subject": "^0.7.0",
+    "rxjs": "^5.0.3",
+    "socket.io": "^1.7.2"
+  }
+}
