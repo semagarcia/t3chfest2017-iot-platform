@@ -7,4 +7,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'app works!';
+  user: string = '';
+  pwd: string = '';
+
+  show = () => {
+    console.log(`Los valores son: ${this.user} y ${this.pwd}`);
+  }
 }

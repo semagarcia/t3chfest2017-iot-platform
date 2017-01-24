@@ -1,0 +1,14 @@
+<div class="row">
+  <h1>Sema IoT Platform!</h1>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <span class="label label-warning" style="font-size: 20px">Potentiometer</span>
+    <button (click)="generateRandomValues()" style="float:right">Random values</button>
+  </div>
+  <div class="panel-body">
+    <chart [options]="gaugeOptions" (load)="saveChartReference($event.context)" class="col-sm-12 col-md-12"></chart>
+  </div>
+</div>
+
