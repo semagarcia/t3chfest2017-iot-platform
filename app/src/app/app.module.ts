@@ -11,13 +11,15 @@ import { AppComponent } from './app.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SettingsComponent } from './settings/settings.component';
 import { SensorsComponent } from './sensors/sensors.component';
+import { ApplicationsComponent } from './applications/applications.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
     SettingsComponent,
-    SensorsComponent
+    SensorsComponent,
+    ApplicationsComponent
   ],
   imports: [
     ChartModule,

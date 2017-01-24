@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SensorsComponent } from './sensors/sensors.component';
+import { ApplicationsComponent } from './applications/applications.component';
 import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
@@ -11,6 +12,7 @@ import { SettingsComponent } from './settings/settings.component';
       { path: '', pathMatch: 'full', redirectTo: '/dashboard' },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'sensors', component: SensorsComponent },
+      { path: 'applications', component: ApplicationsComponent },
       { path: 'settings', component: SettingsComponent },
       { path: '**', redirectTo: '/dashboard' }
     ])
