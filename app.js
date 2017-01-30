@@ -3,10 +3,11 @@ var app = express();
 var server = require('http').createServer(app);  
 var io = require('socket.io')(server);
 
+app.use(express.static(__dirname + '/public'));  
 //app.use(express.static('public'));  
-app.use(express.static('app/dist'));  
-// app.use('/static', express.static('public'));
-// app.use('/static', express.static(__dirname + '/public'));
+//app.use(express.static('app/dist'));  
+//app.use('/static', express.static('public'));
+//app.use('/static', express.static(__dirname + '/public'));
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -16,8 +17,8 @@ app.use(function(req, res, next) {
 
 app.get('/', (req, res) => {
   console.log('Serving index.html');
-  //res.sendFile('public/index.html');
-  res.sendFile('app/dist/index.html');
+  res.sendFile('public/index.html');
+  //res.sendFile('app/dist/index.html');
 });
 
 io.on('connection', (clientSocket) => {  
