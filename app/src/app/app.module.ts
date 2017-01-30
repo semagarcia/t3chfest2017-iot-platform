@@ -8,6 +8,8 @@ import { ChartModule } from 'angular2-highcharts';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
+import { AlertComponent } from './shared/alert.component';
+import { OpenDirective } from './shared/open.directive';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { SettingsComponent } from './settings/settings.component';
 import { SensorsComponent } from './sensors/sensors.component';
@@ -16,6 +18,8 @@ import { ApplicationsComponent } from './applications/applications.component';
 @NgModule({
   declarations: [
     AppComponent,
+    AlertComponent,
+    OpenDirective,
     DashboardComponent,
     SettingsComponent,
     SensorsComponent,

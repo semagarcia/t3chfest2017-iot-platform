@@ -12,4 +12,20 @@ export class ApplicationsComponent implements OnInit {
   ngOnInit() {
   }
 
+  lampController() {
+
+  }
+
+  musicPlayerController() {
+
+  }
+
+  bulbController() {
+
+  }
+
+  zenModeController() {
+
+  }
+
 }

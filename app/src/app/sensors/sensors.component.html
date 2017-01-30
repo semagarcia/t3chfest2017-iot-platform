@@ -10,7 +10,7 @@
         <button (click)="generateRandomValues()" style="float:right">Random values</button>
       </div>
       <div class="panel-body">
-        <chart [options]="gaugeOptions" (load)="saveChartReference($event.context)" class="col-sm-12 col-md-12"></chart>
+        <chart [options]="gaugeOptions" (load)="saveChartReference($event.context)" class="col-xs-12 col-sm-12 col-md-12" style="height:226px"></chart>
       </div>
     </div>
   </div>
@@ -19,12 +19,15 @@
       <div class="panel-heading">
         <span class="label label-warning" style="font-size: 20px">Switcher</span>
       </div>
-      <div class="panel-body">
-        
+      <div class="panel-body clickable" (click)="switcherClicked()" style="text-align:center;">
+        <img [src]="switcherStatusImg" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
       </div>
     </div>
   </div>
 </div>
+
+<button (click)="openAlert()">asdf</button>
+<alert [inputData]="gaugeOptions" (alertOutput)="confirmClose($event)"></alert>
 
 <div class="row">
   <div class="col-md-6">
@@ -32,8 +35,8 @@
       <div class="panel-heading">
         <span class="label label-warning" style="font-size: 20px">Buzzer</span>
       </div>
-      <div class="panel-body">
-        
+      <div class="panel-body clickable" (click)="buzzerClicked()" style="text-align:center;">
+        <img #buzz [src]="buzzerStatusImg" class="col-sm-12 col-md-12" style="max-width:339px; float:none" />
       </div>
     </div>
   </div>
@@ -42,8 +45,8 @@
       <div class="panel-heading">
         <span class="label label-warning" style="font-size: 20px">Touch</span>
       </div>
-      <div class="panel-body">
-        
+      <div class="panel-body clickable" style="text-align:center;">
+        <img src="./../../assets/sensor_touch_black.png" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
       </div>
     </div>
   </div>

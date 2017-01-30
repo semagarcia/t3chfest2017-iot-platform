@@ -8,7 +8,7 @@
     <span class="label label-warning" style="font-size: 20px">27 ºC</span>
   </div>
   <div class="panel-body">
-    <chart [options]="temperatureOpts" class="col-sm-12 col-md-12"></chart>
+    <chart [options]="temperatureOpts" (load)="saveTempChartReference($event.context)" class="col-sm-12 col-md-12"></chart>
   </div>
 </div>
 
@@ -28,6 +28,6 @@
     <span class="label label-primary" style="font-size: 20px">XXX Lux</span>
   </div>
   <div class="panel-body">
-    <chart [options]="temperatureOpts" class="col-sm-12 col-md-12"></chart>
+    <chart [options]="lightOpts" (load)="saveLightChartReference($event.context)" class="col-sm-12 col-md-12"></chart>
   </div>
 </div>

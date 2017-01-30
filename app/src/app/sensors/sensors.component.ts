@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 const Highcharts = require('highcharts');
 const HighchartsMore = require('highcharts-more')(Highcharts);
 const HCSoldGauge = require('highcharts/modules/solid-gauge')(Highcharts);
 //require('highcharts/modules/exporting')(Highcharts);
+
+import { AlertComponent } from './../shared/alert.component';
 
 @Component({
   selector: 'app-sensors',
@@ -15,6 +17,10 @@ export class SensorsComponent implements OnInit {
   gaugeOptions = {};
   gaugeOptions2 = {};
   chart;
+  switcherStatusImg;
+  buzzerStatusImg;
+  alertBodyMessage;
+  @ViewChild(AlertComponent) alert;
 
   constructor() { 
     this.gaugeOptions = {
@@ -85,6 +91,8 @@ export class SensorsComponent implements OnInit {
   }
 
   ngOnInit() {
+      this.switcherStatusImg = './../../assets/icon_switch_on.jpg';
+      this.buzzerStatusImg = './../../assets/icon_speaker_off.png';
   }
 
   saveChartReference(chartInstance) {
@@ -100,6 +108,43 @@ export class SensorsComponent implements OnInit {
 
   getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  switcherClicked() {
+      this.switcherStatusImg = (this.switcherStatusImg.indexOf('_on.') !== -1) 
+        ? this.switcherStatusImg.replace('_on.', '_off.')
+        : this.switcherStatusImg.replace('_off.', '_on.');
+  }
+
+  buzzerClicked() {
+      this.buzzerStatusImg = (this.buzzerStatusImg.indexOf('_on.') !== -1) 
+        ? this.buzzerStatusImg.replace('_on.', '_off.')
+        : this.buzzerStatusImg.replace('_off.', '_on.');
+  }
+
+
+  
+  openAlert(alertToRender) {
+    /*this.alert.alertFooter = true;
+    this.alert.cancelButton = true;
+    this.alert.okButton = false;
+    this.alert.alertHeader = true;
+    this.alert.alertTitle = "A simple Alert modal window";
+    this.alert.message = "It is a classic Alert modal with title, body, footer.";
+    this.alert.cancelButtonText = "Ok, Got it.";
+    this.alert.open();*/
+    this.alert.cancelButton = true;
+    this.alert.okButton = true;
+    this.alert.alertTitle = "A simple Confirm modal window";
+    this.alert.message = "Confirm is a classic (title/body/footer) 2 button modal window";
+    //this.alert.message = require('./alert.modal.html');
+    this.alert.okButtonText = "Ok, Got it.";
+    this.alert.cancelButtonText = "Close";
+    this.alert.open();
+  }
+
+  confirmClose(event) {
+      console.log(event);
   }
 
 }
