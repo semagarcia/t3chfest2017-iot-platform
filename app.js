@@ -4,6 +4,8 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 
 app.use(express.static(__dirname + '/public'));  
+app.use('/js', express.static(__dirname + '/public')); 
+app.use('/css', express.static(__dirname + '/public')); 
 //app.use(express.static('public'));  
 //app.use(express.static('app/dist'));  
 //app.use('/static', express.static('public'));
