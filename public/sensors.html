@@ -21,8 +21,8 @@
       <div class="panel-heading">
         <span class="label label-warning" style="font-size: 20px">Switcher</span>
       </div>
-      <div id="switcher" class="panel-body clickable" style="text-align:center;">
-        <img src="./images/icon_switch_on.jpg" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
+      <div class="panel-body clickable" style="text-align:center;">
+        <img id="switcher" src="./images/icon_switch_on.jpg" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
       </div>
     </div>
   </div>
@@ -35,7 +35,7 @@
         <span class="label label-warning" style="font-size: 20px">Buzzer</span>
       </div>
       <div class="panel-body clickable" style="text-align:center;">
-        <img src="./images/icon_speaker_off.png" class="col-sm-12 col-md-12" style="max-width:339px; float:none" />
+        <img id="buzzer" src="./images/icon_speaker_off.png" class="col-sm-12 col-md-12" style="max-width:339px; float:none" />
       </div>
     </div>
   </div>
@@ -45,7 +45,7 @@
         <span class="label label-warning" style="font-size: 20px">Touch</span>
       </div>
       <div class="panel-body clickable" style="text-align:center;">
-        <img src="./images/sensor_touch_black.png" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
+        <img id="touch" src="./images/sensor_touch_black.png" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
       </div>
     </div>
   </div>
@@ -156,6 +156,9 @@
   });
 
   $(document).ready(() => {
-    
+    $('#switcher, #buzzer, #touch').click(function() { 
+      let status = $(this).attr('src');
+      $(this).attr('src', (status.indexOf('_on.') !== -1) ? status.replace('_on.', '_off.') : status.replace('_off.', '_on.'));
+    });
   });
 </script>
