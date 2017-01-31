@@ -6,7 +6,6 @@
     <link rel="stylesheet" type="text/css" href="./css/styles.css">
 </head>
 <body>
-
     <nav class="navbar navbar-default navbar-static-top">
         <div class="container">
             <div class="navbar-header">
@@ -22,21 +21,19 @@
             </div>
             <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li><a href="">Dashboard</a></li>
-                <li><a href="">Sensors</a></li>
-                <li><a href="">Applications</a></li>
+                <li><a id="menu-link-dashboard" page="dashboard" href="#">Dashboard</a></li>
+                <li><a id="menu-link-sensors" page="sensors" href="#">Sensors</a></li>
+                <li><a id="menu-link-apps" page="applications" href="#">Applications</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="">Settings</a></li>
-                <li><a href="#">Logout</a></li>
+                <li><a id="menu-link-settings" page="settings" href="#">Settings</a></li>
+                <li><a  href="#">Logout</a></li>
             </ul>
             </div>
         </div>
         </nav>
 
-        <div class="container">
-            <h1>Container</h1>
-        </div>
+        <div class="container container-outlet"></div>
 
         <footer class="footer">
         <div class="container">
@@ -47,6 +44,28 @@
     <script src="./js/jquery.min.js"></script>
     <script src="./js/bootstrap.js"></script>
     <script src="./js/socket.io.js"></script>
+    <script src="./js/highcharts.js"></script>
+    <script src="./js/highcharts-more.js"></script>
+
+    <script>
+        $(document).ready(() => {
+            Highcharts.setOptions({
+                global: {
+                    useUTC: false
+                }
+            });
+
+            $('#menu-link-dashboard, #menu-link-sensors, #menu-link-apps, #menu-link-settings').click(function() {
+                $.get($(this).attr('page') + '.html', (data) => {
+                    $('.container-outlet').fadeOut(300, function() {
+                        $(this).html(data);
+                        $(this).fadeIn(300);
+                    });
+                });
+            });
+        });
+    </script>
+
     <!--<script src="./js/Rx.min.js"></script>
     <script src="./js/rx-socket-subject.js"></script>-->
     <script>
@@ -82,4 +101,4 @@
         }, 1000);
     </script>
 </body>
-<body>
+</html>

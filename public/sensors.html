@@ -20,14 +20,11 @@
         <span class="label label-warning" style="font-size: 20px">Switcher</span>
       </div>
       <div class="panel-body clickable" (click)="switcherClicked()" style="text-align:center;">
-        <img [src]="switcherStatusImg" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
+        <img src="./images/icon_switch_on.jpg" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
       </div>
     </div>
   </div>
 </div>
-
-<button (click)="openAlert()">asdf</button>
-<alert [inputData]="gaugeOptions" (alertOutput)="confirmClose($event)"></alert>
 
 <div class="row">
   <div class="col-md-6">
@@ -36,7 +33,7 @@
         <span class="label label-warning" style="font-size: 20px">Buzzer</span>
       </div>
       <div class="panel-body clickable" (click)="buzzerClicked()" style="text-align:center;">
-        <img #buzz [src]="buzzerStatusImg" class="col-sm-12 col-md-12" style="max-width:339px; float:none" />
+        <img src="./images/icon_speaker_off.png" class="col-sm-12 col-md-12" style="max-width:339px; float:none" />
       </div>
     </div>
   </div>
@@ -46,7 +43,7 @@
         <span class="label label-warning" style="font-size: 20px">Touch</span>
       </div>
       <div class="panel-body clickable" style="text-align:center;">
-        <img src="./../../assets/sensor_touch_black.png" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
+        <img src="./images/sensor_touch_black.png" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
       </div>
     </div>
   </div>
