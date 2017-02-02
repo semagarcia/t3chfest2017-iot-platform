@@ -27,8 +27,8 @@
       <div class="panel-heading">
         <span class="label label-warning" style="font-size: 20px">Colorful bulb</span>
       </div>
-      <div class="panel-body clickable" (click)="bulbController()" style="text-align:center;">
-        <img src="./images/icon_lamp.png" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
+      <div class="panel-body clickable" style="text-align:center;">
+        <img id="bulbController" src="./images/icon_lamp.png" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
       </div>
     </div>
   </div>
@@ -95,7 +95,14 @@
         <h4 class="modal-title" id="bulbModalLabel">Modal title</h4>
       </div>
       <div class="modal-body">
-        <h1>Lamp controller</h1>
+        <h1>Bulb controller</h1>
+        <div class="row">
+          <div class="col-lg-1"></div>
+          <div class="col-lg-3" style="height:200; background-color: red; margin: 6px;"></div>
+          <div class="col-lg-3" style="height:200; background-color: green; margin: 6px;"></div>
+          <div class="col-lg-3" style="height:200; background-color: blue; margin: 6px;"></div>
+          <div class="col-lg-1"></div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -106,12 +113,12 @@
 </div>
 
 <!-- zenModeModal -->
-<div class="modal fade" id="zenModeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="zenModeModal" tabindex="-1" role="dialog" aria-labelledby="zenModalLabel">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+        <h4 class="modal-title" id="zenModalLabel">Modal title</h4>
       </div>
       <div class="modal-body">
         Zen mode
@@ -125,7 +132,8 @@
 </div>
 
 <script>
-  $('#musicPlayerController').click(() => { $('#musicPlayerModal').modal('show'); });
   $('#lampController').click(() => { $('#lampControllerModal').modal('show'); }); 
+  $('#musicPlayerController').click(() => { $('#musicPlayerModal').modal('show'); });
+  $('#bulbController').click(() => { $('#bulbControllerModal').modal('show'); });
   $('#zenModeController').click(() => { $('#zenModeModal').modal('show'); });
 </script>
