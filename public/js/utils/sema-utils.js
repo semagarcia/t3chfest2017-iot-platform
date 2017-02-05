@@ -26,6 +26,19 @@ window.semaUtils = (function () {
     /**
      * 
      */
+    utils.requestSensorState = (sensor, callback) => {
+        $.ajax({
+            url: '/sensor/' + sensor,
+            success: function(data) {
+                callback(data);
+            },
+            cache: false
+        });
+    };
+
+    /**
+     * 
+     */
     utils.requestSensorData = (endpoint, chart, callback) => {
         utils.log('Calling to ', endpoint);
 
