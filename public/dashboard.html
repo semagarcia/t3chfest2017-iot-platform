@@ -8,7 +8,7 @@
     <span class="label label-warning" style="font-size: 20px">27 ºC</span>
   </div>
   <div class="panel-body">
-    <chart [options]="temperatureOpts" (load)="saveTempChartReference($event.context)" class="col-sm-12 col-md-12"></chart>
+    <div id="tempChart" style="width:100% !important"></div>
   </div>
 </div>
 
@@ -18,7 +18,7 @@
     <span class="label label-danger" style="font-size: 20px">No (OK)</span>
   </div>
   <div class="panel-body">
-    <chart [options]="temperatureOpts" class="col-sm-12 col-md-12"></chart>
+    <div id="gasChart" style="width:100% !important"></div>
   </div>
 </div>
 
@@ -28,51 +28,55 @@
     <span class="label label-primary" style="font-size: 20px">XXX Lux</span>
   </div>
   <div id="containerTempChart" class="panel-body">
-    <div id="tempChart" style="width:100% !important"></div>
+    <div id="luxChart" style="width:100% !important"></div>
   </div>
 </div>
 
 <script>
-  Highcharts.chart('tempChart', {
-      chart: {
-          width: $('.container').width() * 0.94,
-          type: 'spline',
-          animation: Highcharts.svg, // don't animate in old IE
-          marginRight: 10,
-          events: {
-              load: function () {
 
-                  // set up the updating of the chart each second
-                  var series = this.series[0];
-                  setInterval(function () {
-                      var x = (new Date()).getTime(), // current time
-                          y = Math.random();
-                      series.addPoint([x, y], true, true);
-                  }, 1000);
-              }
-          }
-      },
-      title: {
-          text: 'Live random data'
-      },
-      xAxis: {
-          type: 'datetime',
-          tickPixelInterval: 150
-      },
-      yAxis: {
-          title: {
-              text: 'Value'
-          },
-          plotLines: [{
+    var tempChart = new Highcharts.chart('tempChart', {
+        chart: {
+            width: $('.container').width() * 0.94,
+            type: 'spline',
+            animation: Highcharts.svg,
+            marginRight: 10,
+            events: {
+                load: () => {
+                    setTimeout(() => {
+                        semaUtils.requestSensorData('temp', tempChart, (data) => {
+                            socket.on('sensors:values', function(data) {
+                                tempChart.series[0].addPoint({
+                                    x: data.temperature.timestamp, 
+                                    y: data.temperature.value
+                                }, true, true);
+                            });
+                        });
+                    }, 500);
+                }
+            }
+        },
+        title: {
+            text: 'Temperature values'
+        },  
+        yAxis: {
+            title: {
+                text: 'ºC (celsius)'
+            },
+            max: 60,
+            plotLines: [{
               value: 0,
               width: 1,
               color: '#808080'
           }]
+        },
+        xAxis: {
+          type: 'datetime',
+          tickPixelInterval: 150
       },
       tooltip: {
           formatter: function () {
               return '<b>' + this.series.name + '</b><br/>' +
-                  Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                  Highcharts.dateFormat('%d-%m-%Y %H:%M:%S', this.x) + '<br/>' +
                   Highcharts.numberFormat(this.y, 2);
           }
       },
@@ -83,21 +87,129 @@
           enabled: false
       },
       series: [{
-          name: 'Random data',
-          data: (function () {
-              // generate an array of random data
-              var data = [],
-                  time = (new Date()).getTime(),
-                  i;
-
-              for (i = -19; i <= 0; i += 1) {
-                  data.push({
-                      x: time + i * 1000,
-                      y: Math.random()
-                  });
-              }
-              return data;
-          }())
+          name: 'serie',
+          data: []
       }]
-  });
+    });
+
+    var gasChart = new Highcharts.chart('gasChart', {
+        chart: {
+            width: $('.container').width() * 0.94,
+            type: 'spline',
+            animation: Highcharts.svg,
+            marginRight: 10,
+            events: {
+                load: () => {
+                    setTimeout(() => {
+                        semaUtils.requestSensorData('gas', gasChart, (data) => {
+                            socket.on('sensors:values', function(data) {
+                                gasChart.series[0].addPoint({
+                                    x: data.gas.timestamp, 
+                                    y: data.gas.value
+                                }, true, true);
+                            });
+                        });
+                    }, 500);
+                }
+            }
+        },
+        title: {
+            text: 'Gas presence'
+        },  
+        yAxis: {
+            title: {
+                text: ''
+            },
+            max: 100,
+            plotLines: [{
+              value: 0,
+              width: 1,
+              color: '#808080'
+          },
+          {
+              value: 30,
+              width: 1,
+              color: '#F00'
+          }]
+        },
+        xAxis: {
+          type: 'datetime',
+          tickPixelInterval: 150
+      },
+      tooltip: {
+          formatter: function () {
+              return '<b>' + this.series.name + '</b><br/>' +
+                  Highcharts.dateFormat('%d-%m-%Y %H:%M:%S', this.x) + '<br/>' +
+                  Highcharts.numberFormat(this.y, 2);
+          }
+      },
+      legend: {
+          enabled: false
+      },
+      exporting: {
+          enabled: false
+      },
+      series: [{
+          name: 'serie',
+          data: []
+      }]
+    });
+    
+    var luxChart = new Highcharts.chart('luxChart', {
+        chart: {
+            width: $('.container').width() * 0.94,
+            type: 'spline',
+            animation: Highcharts.svg,
+            marginRight: 10,
+            events: {
+                load: () => {
+                    setTimeout(() => {
+                        semaUtils.requestSensorData('light', luxChart, (data) => {
+                            socket.on('sensors:values', function(data) {
+                                luxChart.series[0].addPoint({
+                                    x: data.light.timestamp, 
+                                    y: data.light.value
+                                }, true, true);
+                            });
+                        });
+                    }, 500);
+                }
+            }
+        },
+        title: {
+            text: 'Lux light values'
+        },  
+        yAxis: {
+            title: {
+                text: 'Lumens'
+            },
+            plotLines: [{
+              value: 0,
+              width: 1,
+              color: '#808080'
+          }]
+        },
+        xAxis: {
+          type: 'datetime',
+          tickPixelInterval: 150
+      },
+      tooltip: {
+          formatter: function () {
+              return '<b>' + this.series.name + '</b><br/>' +
+                  Highcharts.dateFormat('%d-%m-%Y %H:%M:%S', this.x) + '<br/>' +
+                  Highcharts.numberFormat(this.y, 2);
+          }
+      },
+      legend: {
+          enabled: false
+      },
+      exporting: {
+          enabled: false
+      },
+      series: [{
+          name: 'serie',
+          data: []
+      }]
+    });
+
 </script>
