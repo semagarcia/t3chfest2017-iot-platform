@@ -4,6 +4,29 @@ var cors = require('cors');
 var server = require('http').createServer(app);  
 var io = require('socket.io')(server);
 
+var mraa = require('mraa');
+var sensors = require('jsupm_grove');
+var tempSensor = new sensors.GroveTemp(0);
+var lightSensor = new sensors.GroveLight(1);
+var rotarySensor = new sensors.GroveRotary(2);
+var GAS_THRESHOLD = 400;
+var gasSensorLibrary = require('jsupm_gas');
+var gasSensor = new gasSensorLibrary.MQ5(3);
+var buzzer = new mraa.Gpio(5);
+buzzer.dir(mraa.DIR_OUT);
+var buzzerState = 0;
+var panicMode = false;
+var intervalPanicMode;
+var led = new sensors.GroveLed(3);
+var ledState = 'off';
+var touchSensor = new mraa.Gpio(6);
+touchSensor.dir(mraa.DIR_IN);
+
+// Initialize sensors
+buzzer.write(0);
+led.off();
+
+
 app.use(express.static(__dirname + '/public'));  
 app.use('/js', express.static(__dirname + '/public')); 
 app.use('/css', express.static(__dirname + '/public')); 
@@ -76,6 +99,13 @@ app.get('/light', (req, res) => {
   });
 });
 
+app.get('/sensor/led', (req, res) => {
+  res.send({
+    sensor: 'led',
+    state: ledState
+  });
+});
+
 /**
  * 
  */
@@ -87,9 +117,32 @@ io.set('origins', '*:*');
 io.on('connection', (clientSocket) => {  
     console.log('Client connected... ' + clientSocket.id);
 
-    clientSocket.on('event:cient', (message) => {
+    clientSocket.on('event:client', (message) => {
       console.log('Message received: ', message);
       clientSocket.emit('msg', { resp: 'user logged successfully' });
+    });
+
+    clientSocket.on('event:sensor', (actionData) => {
+      console.log('Registered action: ', JSON.stringify(actionData));
+      switch(actionData.sensor) {
+        case 'switcher':
+          if(actionData.action === 'on') {
+            led.on();
+            ledState = 'on';
+            io.sockets.emit('event:sensor', { 
+              sensor: 'switcher',
+              value: ledState
+            });
+          } else {
+            led.off();
+            ledState = 'off';
+            io.sockets.emit('event:sensor', { 
+              sensor: 'switcher',
+              value: ledState
+            });
+          }
+          break;
+      }
     });
 });
 
@@ -97,19 +150,43 @@ io.on('connection', (clientSocket) => {
  * La que envía el dato actualizado
  */
 setInterval(function(){
-  let now = new Date().getTime();
+  var now = new Date().getTime();
+  console.log(`>> T: ${tempSensor.value()}ºC, L: ${lightSensor.value()}LUX, R: ${rotarySensor.abs_value()}º, G: ${gasSensor.getSample()}, T2: ${touchSensor.read()}`);
+
+  if(gasSensor.getSample() > GAS_THRESHOLD && !panicMode) {
+    panicMode = true;
+    intervalPanicMode = setInterval(() => {
+      console.log(' >>>> PANIC MODE ENABLED!!!! <<<<');
+      buzzer.write(buzzerState);
+      buzzerState = (buzzerState === 0) ? 1 : 0;
+    }, 200);
+  } else if(gasSensor.getSample() <= GAS_THRESHOLD && panicMode) {
+    clearInterval(intervalPanicMode);
+    panicMode = false;
+    buzzer.write(0);
+    console.log('>> Disabling panic mode... all it is OK now!');
+  }
+
   io.sockets.emit('sensors:values', { 
+    timestamp: now,
     temperature: {
-      timestamp: now, 
-      value: getRandomValue(40, 0) 
+      value: tempSensor.value()
     },
     gas: {
-      timestamp: now, 
-      value: getRandomValue(5, 0)
+      panicMode: panicMode,
+      value: gasSensor.getSample()
     },
     light: {
-      timestamp: now, 
-      value: getRandomValue(40, 0)
+      value: lightSensor.value()
+    },
+    rotary: {
+      value: {
+        abs: rotarySensor.abs_value(),
+        rel: rotarySensor.rel_value()
+      }
+    },
+    touch: {
+      state: touchSensor.read()
     }
   });
 }, 1000); // Parametrizar este valor
