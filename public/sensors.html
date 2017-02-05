@@ -7,7 +7,6 @@
     <div class="panel panel-default">
       <div class="panel-heading">
         <span class="label label-warning" style="font-size: 20px">Potentiometer</span>
-        <button (click)="generateRandomValues()" style="float:right">Random values</button>
       </div>
       <div class="panel-body clickable" style="text-align:center;">
         <div>
@@ -19,10 +18,10 @@
   <div class="col-md-6">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <span class="label label-warning" style="font-size: 20px">Switcher</span>
+        <span class="label label-warning" style="font-size: 20px">Switcher (<span id="switchStatus">off</span>)</span>
       </div>
       <div class="panel-body clickable" style="text-align:center;">
-        <img id="switcher" src="./images/icon_switch_on.jpg" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
+        <img id="switcher" src="./images/icon_switch_off.jpg" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
       </div>
     </div>
   </div>
@@ -34,7 +33,7 @@
       <div class="panel-heading">
         <span class="label label-warning" style="font-size: 20px">Buzzer</span>
       </div>
-      <div class="panel-body clickable" style="text-align:center;">
+      <div class="panel-body" style="text-align:center;">
         <img id="buzzer" src="./images/icon_speaker_off.png" class="col-sm-12 col-md-12" style="max-width:339px; float:none" />
       </div>
     </div>
@@ -44,7 +43,7 @@
       <div class="panel-heading">
         <span class="label label-warning" style="font-size: 20px">Touch</span>
       </div>
-      <div class="panel-body clickable" style="text-align:center;">
+      <div class="panel-body" style="text-align:center;">
         <img id="touch" src="./images/sensor_touch_off.png" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
       </div>
     </div>
@@ -52,7 +51,7 @@
 </div>
 
 <script>
-  Highcharts.chart('gaugeChart', {
+  var gaugeChart = new Highcharts.chart('gaugeChart', {
       chart: {
           type: 'gauge',
           plotBackgroundColor: null,
@@ -99,7 +98,7 @@
       // the value axis
       yAxis: {
           min: 0,
-          max: 200,
+          max: 1030,
           minorTickInterval: 'auto',
           minorTickWidth: 1,
           minorTickLength: 10,
@@ -115,19 +114,19 @@
               rotation: 'auto'
           },
           title: {
-              text: 'km/h'
+              text: 'Torsion'
           },
           plotBands: [{
               from: 0,
-              to: 120,
+              to: 600,
               color: '#55BF3B' // green
           }, {
-              from: 120,
-              to: 160,
+              from: 600,
+              to: 900,
               color: '#DDDF0D' // yellow
           }, {
-              from: 160,
-              to: 200,
+              from: 900,
+              to: 1030,
               color: '#DF5353' // red
           }]
       },
@@ -139,26 +138,62 @@
           }
       }]
     },
-    // Add some life
+    // Subscribe to the socket
     function (chart) {
-      if (!chart.renderer.forExport) {
-          setInterval(function () {
-              var point = chart.series[0].points[0],
-                  newVal,
-                  inc = Math.round((Math.random() - 0.5) * 20);
-              newVal = point.y + inc;
-              if (newVal < 0 || newVal > 200) {
-                  newVal = point.y - inc;
-              }
-              point.update(newVal);
-          }, 3000);
-      }
+      socket.on('sensors:values', function(data) {
+          var point = gaugeChart.series[0].points[0];
+          point.update(data.rotary.value.abs);
+      });
   });
 
   $(document).ready(() => {
-    $('#switcher, #buzzer, #touch').click(function() { 
-      let status = $(this).attr('src');
-      $(this).attr('src', (status.indexOf('_on.') !== -1) ? status.replace('_on.', '_off.') : status.replace('_off.', '_on.'));
+    $('#switcher').click(function() { 
+      let stateImage = $(this).attr('src');
+      let newState = (stateImage.slice(stateImage.lastIndexOf('_') + 1, stateImage.lastIndexOf('.')) === 'on') ? 'off' : 'on';
+      $(this).attr('src', (stateImage.indexOf('_on.') !== -1) ? stateImage.replace('_on.', '_off.') : stateImage.replace('_off.', '_on.'));
+      socket.emit('event:sensor', { 
+        sensor: 'switcher', 
+        action: newState
+      });
     });
+
+    $('#buzzer').click(function() { 
+      let state = $(this).attr('src');
+      $(this).attr('src', (state.indexOf('_on.') !== -1) ? state.replace('_on.', '_off.') : state.replace('_off.', '_on.'));
+    });
+
+    semaUtils.requestSensorState('led', (sensorData) => {
+      if(sensorData.sensor === 'led') {
+        changeSwitcherStatus(sensorData.state);
+      }
+    });
+  });
+
+  function changeSwitcherStatus(updatedValue) {
+    $('#switchStatus').text(updatedValue);
+    let imageSrc = $('#switcher').attr('src');
+    let currentState = (imageSrc.slice(imageSrc.lastIndexOf('_') + 1, imageSrc.lastIndexOf('.')) === 'on') ? 'on' : 'off';
+    $('#switcher').attr('src', imageSrc.replace(currentState + '.', updatedValue + '.'));
+  }
+
+  function changeTouchSensor(newState) {
+    let state = $('#touch').attr('src');
+    if(state.indexOf('_on') !== -1 && newState === 0) {
+      $('#touch').attr('src', state.replace('_on.', '_off.'));
+    } else if(state.indexOf('_off') !== -1 && newState === 1) {
+      $('#touch').attr('src', state.replace('_off.', '_on.'));
+    }
+  }
+
+  socket.on('event:sensor', (data) => {
+    if(data.sensor === 'switcher') {
+      changeSwitcherStatus(data.value);
+    }
+  });
+
+  socket.on('sensors:values', (data) => {
+    if(data.touch && document.querySelector('#touch')) {
+      changeTouchSensor(data.touch.state);
+    }
   });
 </script>

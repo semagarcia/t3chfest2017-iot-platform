@@ -15,7 +15,7 @@
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title" style="padding-bottom: 12px">Gas presence</h3>
-    <span class="label label-danger" style="font-size: 20px">No (OK)</span>
+    <span class="label label-danger" style="font-size: 20px"><span id="gasAlert"></span></span>
   </div>
   <div class="panel-body">
     <div id="gasChart" style="width:100% !important"></div>
@@ -46,7 +46,7 @@
                         semaUtils.requestSensorData('temp', tempChart, (data) => {
                             socket.on('sensors:values', function(data) {
                                 tempChart.series[0].addPoint({
-                                    x: data.temperature.timestamp, 
+                                    x: data.timestamp, 
                                     y: data.temperature.value
                                 }, true, true);
                             });
@@ -62,7 +62,7 @@
             title: {
                 text: 'ºC (celsius)'
             },
-            max: 60,
+            max: 40,
             plotLines: [{
               value: 0,
               width: 1,
@@ -103,8 +103,15 @@
                     setTimeout(() => {
                         semaUtils.requestSensorData('gas', gasChart, (data) => {
                             socket.on('sensors:values', function(data) {
+                                if(data.gas.panicMode) {
+                                    $('body').css('background-color', 'red');
+                                    $('#gasAlert').text('KO (Gas detected)!!!');
+                                } else {
+                                    $('body').css('background-color', 'white');
+                                    $('#gasAlert').text('NO (OK)');
+                                }
                                 gasChart.series[0].addPoint({
-                                    x: data.gas.timestamp, 
+                                    x: data.timestamp, 
                                     y: data.gas.value
                                 }, true, true);
                             });
@@ -120,15 +127,24 @@
             title: {
                 text: ''
             },
-            max: 100,
+            max: 1000,
             plotLines: [{
               value: 0,
               width: 1,
               color: '#808080'
           },
           {
-              value: 30,
+              value: 250,
               width: 1,
+              label: { text: 'Low gas risk level' },
+              zIndex: 4,
+              color: '#DDDF0D'
+          },
+          {
+              value: 400,
+              width: 1,
+              label: { text: 'High gas risk level' },
+              zIndex: 4,
               color: '#F00'
           }]
         },
@@ -167,7 +183,7 @@
                         semaUtils.requestSensorData('light', luxChart, (data) => {
                             socket.on('sensors:values', function(data) {
                                 luxChart.series[0].addPoint({
-                                    x: data.light.timestamp, 
+                                    x: data.timestamp, 
                                     y: data.light.value
                                 }, true, true);
                             });
