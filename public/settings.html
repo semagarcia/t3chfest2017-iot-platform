@@ -14,6 +14,8 @@
 
 <script>
   $(document).ready(() => {
+    $(document).attr('title', 'T3chFest 2017 - Plataforma IoT :: Settings');
+
     semaUtils.getSettings((settings) => {
       window.settings = settings;
       settings.forEach((s) => {
