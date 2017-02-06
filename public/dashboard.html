@@ -5,7 +5,7 @@
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title" style="padding-bottom: 12px">Temperature sensor</h3>
-    <span class="label label-warning" style="font-size: 20px">27 ºC</span>
+    <span class="label label-warning" style="font-size: 20px"><span id="tempValue"></span> ºC</span>
   </div>
   <div class="panel-body">
     <div id="tempChart" style="width:100% !important"></div>
@@ -25,7 +25,7 @@
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title" style="padding-bottom: 12px">Light sensor</h3>
-    <span class="label label-primary" style="font-size: 20px">XXX Lux</span>
+    <span class="label label-primary" style="font-size: 20px"><span id="lightValue"></span> Lux</span>
   </div>
   <div id="containerTempChart" class="panel-body">
     <div id="luxChart" style="width:100% !important"></div>
@@ -33,6 +33,7 @@
 </div>
 
 <script>
+    $(document).attr('title', 'T3chFest 2017 - Plataforma IoT :: Dashboard');
 
     var tempChart = new Highcharts.chart('tempChart', {
         chart: {
@@ -49,6 +50,7 @@
                                     x: data.timestamp, 
                                     y: data.temperature.value
                                 }, true, true);
+                                $('#tempValue').text(data.temperature.value);
                             });
                         });
                     }, 500);
@@ -186,6 +188,7 @@
                                     x: data.timestamp, 
                                     y: data.light.value
                                 }, true, true);
+                                $('#lightValue').text(data.light.value);
                             });
                         });
                     }, 500);
