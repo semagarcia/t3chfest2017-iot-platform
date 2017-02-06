@@ -142,11 +142,13 @@
     function (chart) {
       socket.on('sensors:values', function(data) {
           var point = gaugeChart.series[0].points[0];
-          point.update(data.rotary.value.abs);
+          point.update(data.rotary.value);
       });
   });
 
   $(document).ready(() => {
+    $(document).attr('title', 'T3chFest 2017 - Plataforma IoT :: Sensors');
+
     $('#switcher').click(function() { 
       let stateImage = $(this).attr('src');
       let newState = (stateImage.slice(stateImage.lastIndexOf('_') + 1, stateImage.lastIndexOf('.')) === 'on') ? 'off' : 'on';
