@@ -3,6 +3,7 @@ var app = express();
 var cors = require('cors');
 var server = require('http').createServer(app);  
 var io = require('socket.io')(server);
+//var settings = require('./settings.json');
 
 var mraa = require('mraa');
 var sensors = require('jsupm_grove');
@@ -42,6 +43,15 @@ app.use(function(req, res, next) {
 
 app.get('/', (req, res) => {
   res.sendFile('public/index.html');
+});
+
+app.get('/settings', (req, res) => {
+  res.send([
+    { key: 'frequency', name: 'Sampling frequency', value: 'xxx' },
+    { key: 'numberOfPoints', name: 'Number of points', value: 'yyy' },
+    { key: 'k1', name: 'n1', value: 'v1' },
+    { key: 'k2', name: 'n2', value: 'v2' }
+  ]);
 });
 
 app.get('/temp', (req, res) => {
