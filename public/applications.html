@@ -5,7 +5,7 @@
         <span class="label label-warning" style="font-size: 20px">Lamp</span>
       </div>
       <div class="panel-body clickable" style="text-align:center;">
-        <img id="lampController" src="./images/icon_bulb_off.png" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
+        <img id="lampController" src="./images/icon_bulb_off.png" class="col-sm-12 col-md-12" style="max-width:180px; float:none" />
       </div>
     </div>
   </div>
@@ -93,7 +93,9 @@
 
 <script>
   $(document).ready(() => {
-    $('#lampController').click(() => { 
+    $(document).attr('title', 'T3chFest 2017 - Plataforma IoT :: Applications');
+
+    $('#lampController').click(function() { 
       let stateImage = $(this).attr('src');
       let newState = (stateImage.slice(stateImage.lastIndexOf('_') + 1, stateImage.lastIndexOf('.')) === 'on') ? 'off' : 'on';
       semaUtils.sendX10Command('lamp', newState, function() {});
