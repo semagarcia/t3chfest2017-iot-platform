@@ -54,10 +54,7 @@
         <h4 class="modal-title" id="lampModalLabel">Modal title</h4>
       </div>
       <div class="modal-body">
-        <h1>Lamp controller</h1>
-        <div class="row">
-          <img src="./images/bulb_off.png" style="margin: 0 auto;" />
-        </div>
+        
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -77,10 +74,12 @@
       </div>
       <div class="modal-body">
         <h1>Music player</h1>
+        <ul id="songList"></ul>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+        <button type="button" id="stopPlayer" class="btn btn-info">Stop player</button>
+        <button type="button" id="fwPlayer" class="btn btn-primary">Forward player</button>
       </div>
     </div>
   </div>
@@ -133,9 +132,36 @@
 </div>
 
 <script>
-  $('#lampController').click(() => { $('#lampControllerModal').modal('show'); }); 
-  $('#musicPlayerController').click(() => { $('#musicPlayerModal').modal('show'); });
-  $('#bulbController').click(() => { $('#bulbControllerModal').modal('show'); });
-  $('#zenModeController').click(() => { $('#zenModeModal').modal('show'); });
-  $('#setColorBtn').click(() => {  });
+  $(document).ready(() => {
+    $('#lampController').click(() => { 
+      semaUtils.sendX10Command();
+    }); 
+
+    $('#musicPlayerController').click(() => { 
+      semaUtils.getSongList((songList) => {
+        $('#songList').empty();
+        songList.forEach((song) => {
+          $('#songList').append(`<li><a name="${song}" link="song" style="cursor:pointer">${song}</a></li>`);
+        });
+        $('a[link="song"]').click(function() {
+          semaUtils.playSong($(this).attr('name'));
+        });
+        $('#musicPlayerModal').modal('show'); 
+      });
+    });
+
+    $('#fwPlayer').click(() => {
+      semaUtils.forwardPlaying();
+    });
+
+    $('#stopPlayer').click(() => {
+      semaUtils.stopPlaying();
+    });
+
+
+
+    $('#bulbController').click(() => { $('#bulbControllerModal').modal('show'); });
+    $('#zenModeController').click(() => { $('#zenModeModal').modal('show'); });
+    $('#setColorBtn').click(() => {  });
+  });
 </script>

@@ -64,9 +64,73 @@ window.semaUtils = (function () {
         });
     }; 
 
+    /**
+     * 
+     */
+    utils.sendX10Command = () => {
+        $.ajax({
+            type: 'post',
+            url: 'http://192.168.12.70:3000/x10',
+            data: { a:1, b:'on' },
+            success: function(data) {
+                console.log('>> ', data);
+            },
+            cache: false
+        });
+    };
 
+    /**
+     * 
+     */
+    utils.getSongList = (callback) => {
+        $.ajax({
+            url: 'http://192.168.12.70:3000/library',
+            success: function(data) {
+                callback(data);
+            },
+            cache: false
+        });
+    };
 
+    /**
+     * 
+     */
+    utils.playSong = (song) => {
+        $.ajax({
+            type: 'post',
+            data: { song: song },
+            url: 'http://192.168.12.70:3000/library/play',
+            success: function() { },
+            error: function() { 
+                // Check if there was an error (erro handler)
+            },
+            cache: false
+        });
+    };
 
-     
+    /**
+     * 
+     */
+    utils.stopPlaying = () => {
+        $.ajax({
+            url: 'http://192.168.12.70:3000/library/stop',
+            success: function(data) {
+            },
+            cache: false
+        });
+    };
+
+    /**
+     * 
+     */
+    utils.forwardPlaying = () => {
+        $.ajax({
+            url: 'http://192.168.12.70:3000/library/forward',
+            success: function(data) {
+            },
+            cache: false
+        });
+    };
+
     return utils;
 }($));
