@@ -26,6 +26,19 @@ window.semaUtils = (function () {
     /**
      * 
      */
+    utils.getSettings = (callback) => {
+        $.ajax({
+            url: '/settings',
+            success: function(data) {
+                callback(data);
+            },
+            cache: false
+        });
+    };
+
+    /**
+     * 
+     */
     utils.requestSensorState = (sensor, callback) => {
         $.ajax({
             url: '/sensor/' + sensor,
@@ -67,13 +80,16 @@ window.semaUtils = (function () {
     /**
      * 
      */
-    utils.sendX10Command = () => {
+    utils.sendX10Command = (device, action, callback) => {
         $.ajax({
             type: 'post',
             url: 'http://192.168.12.70:3000/x10',
-            data: { a:1, b:'on' },
-            success: function(data) {
-                console.log('>> ', data);
+            data: { 
+                device: device, 
+                action: action 
+            },
+            success: function() {
+                callback();
             },
             cache: false
         });
