@@ -5,32 +5,25 @@
         <span style="font-size: 20px">Global variables</span>
         <button style="float:right">Save changes</button>
       </div>
-      <div class="panel-body" style="text-align:center;">
-        <div class="row" style="padding:8px 0">
-          <div class="col-md-3 col-lg-3">Sampling frequency</div>
-          <div class="col-md-9 col-lg-9"><input type="text" style="width:100%" /></div>
-        </div>
-
-        <div class="row" style="padding:8px 0">
-          <div class="col-md-3 col-lg-3">Number of points</div>
-          <div class="col-md-9 col-lg-9"><input type="text" style="width:100%" /></div>
-        </div>
-
-        <div class="row" style="padding:8px 0">
-          <div class="col-md-3 col-lg-3">Key</div>
-          <div class="col-md-9 col-lg-9"><input type="text" style="width:100%" /></div>
-        </div>
-
-        <div class="row" style="padding:8px 0">
-          <div class="col-md-3 col-lg-3">Key</div>
-          <div class="col-md-9 col-lg-9"><input type="text" style="width:100%" /></div>
-        </div>
-
-        <div class="row" style="padding:8px 0">
-          <div class="col-md-3 col-lg-3">Key</div>
-          <div class="col-md-9 col-lg-9"><input type="text" style="width:100%" /></div>
-        </div>
+      <div id="settingPanel" class="panel-body" style="text-align:center;">
+        <!-- Dynamic settings -->
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  $(document).ready(() => {
+    semaUtils.getSettings((settings) => {
+      window.settings = settings;
+      settings.forEach((s) => {
+        $('#settingPanel').append(`
+          <div class="row" style="padding:8px 0">
+            <div class="col-md-3 col-lg-3">${s.name}</div>
+            <div class="col-md-9 col-lg-9"><input id="${s.key}" type="text" value="${s.value}" style="width:100%" /></div>
+          </div>
+        `);
+      });
+    });
+  });
+</script>
