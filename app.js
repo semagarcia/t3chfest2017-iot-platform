@@ -4,6 +4,11 @@ var cors = require('cors');
 var server = require('http').createServer(app);  
 var io = require('socket.io')(server);
 //var settings = require('./settings.json');
+var platformStatus = {
+  temperature: [],
+  gas: [],
+  light: []
+};
 
 var mraa = require('mraa');
 var sensors = require('jsupm_grove');
@@ -27,7 +32,7 @@ touchSensor.dir(mraa.DIR_IN);
 buzzer.write(0);
 led.off();
 
-
+//
 app.use(express.static(__dirname + '/public'));  
 app.use('/js', express.static(__dirname + '/public')); 
 app.use('/css', express.static(__dirname + '/public')); 
@@ -46,6 +51,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/settings', (req, res) => {
+  // Read from settings.json
   res.send([
     { key: 'frequency', name: 'Sampling frequency', value: 'xxx' },
     { key: 'numberOfPoints', name: 'Number of points', value: 'yyy' },
@@ -55,57 +61,23 @@ app.get('/settings', (req, res) => {
 });
 
 app.get('/temp', (req, res) => {
-  var data = [],
-      time = (new Date()).getTime(),
-      i;
-
-  for (i=0; i<20; i++) {
-    data.push({
-        x: time + i * 1000,
-        y: getRandomValue(40, 0) 
-    });
-  }
-
   res.send({
     sensor: 'temperature',
-    lastValues: data
+    lastValues: platformStatus.temperature.slice(-20)
   });
 });
 
 app.get('/gas', (req, res) => {
-  var data = [],
-      randomValues = [1, 2, 3, 4, 5, 6],
-      time = (new Date()).getTime(),
-      i;
-
-  for (i=0; i<20; i++) {
-    data.push({
-        x: time + i * 1000,
-        y: randomValues[getRandomValue(5, 0)]
-    });
-  }
-
   res.send({
     sensor: 'gas',
-    lastValues: data
+    lastValues: platformStatus.gas.slice(-20)
   });
 });
 
 app.get('/light', (req, res) => {
-  var data = [],
-      time = (new Date()).getTime(),
-      i;
-
-  for (i=0; i<20; i++) {
-    data.push({
-        x: time + i * 1000,
-        y: getRandomValue(40, 0) 
-    });
-  }
-
   res.send({
     sensor: 'light',
-    lastValues: data
+    lastValues: platformStatus.light.slice(-20)
   });
 });
 
@@ -161,16 +133,27 @@ io.on('connection', (clientSocket) => {
  */
 setInterval(function(){
   var now = new Date().getTime();
-  console.log(`>> T: ${tempSensor.value()}ºC, L: ${lightSensor.value()}LUX, R: ${rotarySensor.abs_value()}º, G: ${gasSensor.getSample()}, T2: ${touchSensor.read()}`);
+  var tempValue = tempSensor.value();
+  var gasValue = gasSensor.getSample();
+  var lightValue = lightSensor.value();
+  var rotValue = rotarySensor.abs_value();
+  var touchValue = touchSensor.read();
+  console.log(`>> T: ${tempValue}ºC, L: ${lightValue}LUX, R: ${rotValue}º, G: ${gasValue}, T2: ${touchValue}`);
 
-  if(gasSensor.getSample() > GAS_THRESHOLD && !panicMode) {
+  // Update the status of the platform
+  platformStatus.temperature.push({x: now, y: tempValue});
+  platformStatus.gas.push({x: now, y: gasValue});
+  platformStatus.light.push({x: now, y: lightValue});
+
+  // Check the alert for the panic mode
+  if(gasValue > GAS_THRESHOLD && !panicMode) {
     panicMode = true;
     intervalPanicMode = setInterval(() => {
       console.log(' >>>> PANIC MODE ENABLED!!!! <<<<');
       buzzer.write(buzzerState);
       buzzerState = (buzzerState === 0) ? 1 : 0;
     }, 200);
-  } else if(gasSensor.getSample() <= GAS_THRESHOLD && panicMode) {
+  } else if(gasValue <= GAS_THRESHOLD && panicMode) {
     clearInterval(intervalPanicMode);
     panicMode = false;
     buzzer.write(0);
@@ -180,23 +163,20 @@ setInterval(function(){
   io.sockets.emit('sensors:values', { 
     timestamp: now,
     temperature: {
-      value: tempSensor.value()
+      value: tempValue
     },
     gas: {
       panicMode: panicMode,
-      value: gasSensor.getSample()
+      value: gasValue
     },
     light: {
-      value: lightSensor.value()
+      value: lightValue
     },
     rotary: {
-      value: {
-        abs: rotarySensor.abs_value(),
-        rel: rotarySensor.rel_value()
-      }
+      value: rotValue
     },
     touch: {
-      state: touchSensor.read()
+      state: touchValue
     }
   });
 }, 1000); // Parametrizar este valor
