@@ -1,7 +1,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>PoC</title>
+	<title>T3chFest 2017 - Plataforma IoT :: Home</title>
     <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="./css/styles.css">
 </head>
@@ -50,10 +50,9 @@
     <script src="./js/libs/highcharts.js"></script>
     <script src="./js/libs/highcharts-more.js"></script>
     <script src="./js/utils/sema-utils.js"></script>
-
     <script>
         // Debug mode enabled
-        window.semaDebugMode = true;
+        window.semaDebugMode = false;
 
         $(document).ready(() => {
             Highcharts.setOptions({
@@ -71,47 +70,11 @@
                 });
             });
         });
-    </script>
 
-    <!--<script src="./js/Rx.min.js"></script>
-    <script src="./js/rx-socket-subject.js"></script>-->
-    <script>
-        //var socket = io.connect('ws://localhost:3000');
         var socket = io.connect();
         socket.on('connect', function(data) {
             socket.emit('join', 'Hello World from client');
         });
- 
-        /*socket.on('msg', function(data) {
-            console.log('Mensaje: ' + JSON.stringify(data));
-            if(luxChart !== null && luxChart !== undefined) {
-                var chart = luxChart;
-                var series = chart.series[0];
-                chart.series[0].addPoint({x:data.resp, y:data.value}, true, true);
-            }
-        });*/
-
-        socket.emit('msg', { data: 1 });
-
-
-
-        /*var socket = RxSocketSubject.create('ws://localhost:3000');
-
-        // use the socket subject as an Observer and send messages with onNext()
-        // even though the underlying socket still hasn't been created,
-        // the messages will be buffered until a socket is made and connected
-        socket.onNext('one');
-        socket.onNext('two');
-
-        // subscribing to the socket subject as an Observable will start the socket and connect.
-        socket.forEach(function(e) {
-            console.log(e); // raw message events are emitted
-        });
-
-        setTimeout(function(){
-            // while the socket is connected, onNext will send the message immediately through it.
-            socket.onNext('three');
-        }, 1000);*/
     </script>
 </body>
 </html>

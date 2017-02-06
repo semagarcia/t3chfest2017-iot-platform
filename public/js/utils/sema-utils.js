@@ -53,7 +53,7 @@ window.semaUtils = (function () {
      * 
      */
     utils.requestSensorData = (endpoint, chart, callback) => {
-        utils.log('Calling to ', endpoint);
+        utils.log('Calling to ' + endpoint);
 
         // "Sanitize" the input
         if(endpoint.charAt(0) === '/') {
