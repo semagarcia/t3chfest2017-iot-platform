@@ -119,16 +119,12 @@
                             $('#menu-link-settings').trigger('click');
                             break;
                     }
-                    //artyom.say('Hola! Cómo estás hoy?');
                 }
             });
-
-            console.log('Index >> ', artyom.getAvailableCommands());
 
             artyom.initialize({
                 continuous:true,
                 lang:"es-ES",
-                //executionKeyword: "ahora ya",  // *comando* + "ahora ya"
                 obeyKeyword: "reconocimiento",  // reconocimiento + *comando*
                 listen:false,
                 debug:true
@@ -138,44 +134,6 @@
         var socket = io.connect();
         socket.on('connect', function(data) {
             socket.emit('join', 'Hello World from client');
-        });
-
-
-
-
-
-
-
-
-
-
-        navigator.bluetooth.requestDevice({
-            filters: [{ services: [0xffe5] }]
-        })
-        .then(function(device) {
-            // Step 2: Connect to it
-            console.log('setp2: ', device);
-            return device.gatt.connect();
-        })
-        .then(function(server) {
-            // Step 3: Get the Service
-            console.log('setp3: ', server);
-            return server.getPrimaryService(0xffe5);
-        })
-        .then(function(service) {
-            // Step 4: get the Characteristic
-            console.log('setp4: ', service);
-            return service.getCharacteristic(0xffe9);
-        })
-        .then(function(characteristic) {
-            // Step 5: Write to the characteristic
-            console.log('setp5: ', characteristic);
-            var data = new Uint8Array([0xbb, 0x25, 0x05, 0x44]);
-            return characteristic.writeValue(data);
-        })
-        .catch(function(error) {
-            // And of course: error handling!
-            console.error('Connection failed!', error);
         });
     </script>
 </body>
