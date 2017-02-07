@@ -33,8 +33,10 @@
 </div>
 
 <script>
+    // Update title
     $(document).attr('title', 'T3chFest 2017 - Plataforma IoT :: Dashboard');
 
+    // Temperature chart
     var tempChart = new Highcharts.chart('tempChart', {
         chart: {
             width: $('.container').width() * 0.94,
@@ -94,6 +96,7 @@
       }]
     });
 
+    // Gas chart
     var gasChart = new Highcharts.chart('gasChart', {
         chart: {
             width: $('.container').width() * 0.94,
@@ -105,6 +108,7 @@
                     setTimeout(() => {
                         semaUtils.requestSensorData('gas', gasChart, (data) => {
                             socket.on('sensors:values', function(data) {
+                                // In case of panic mode, change the background color
                                 if(data.gas.panicMode) {
                                     $('body').css('background-color', 'red');
                                     $('#gasAlert').text('KO (Gas detected)!!!');
@@ -173,6 +177,7 @@
       }]
     });
     
+    // Light chart
     var luxChart = new Highcharts.chart('luxChart', {
         chart: {
             width: $('.container').width() * 0.94,
@@ -230,5 +235,4 @@
           data: []
       }]
     });
-
 </script>
