@@ -131,5 +131,53 @@
     });
 
     $('#zenModeController').click(() => { $('#zenModeModal').modal('show'); });
+    
+    console.log('Apps >> ', artyom.getAvailableCommands());
+
+    artyom.addCommands({
+      indexes: ['lanzar *'],
+      smart: true,
+      action: (i, wildcard) => {
+        switch(wildcard) {
+            case 'modo zen': $('#zenModeController').trigger('click'); break;
+            case 'reproductor': $('#musicPlayerController').trigger('click'); break;
+            default: artyom.say('Disculpe, no le he entendido... repita por favor');
+          }
+      }
+    });
+
+    artyom.addCommands({
+      indexes: ['reproducir música', 'siguiente canción', 'parar música'],
+      action: (i) => {
+        switch(i) {
+            case 0: semaUtils.forwardPlaying(); break;
+            case 1: semaUtils.forwardPlaying(); break;
+            case 2: semaUtils.stopPlaying(); break;
+            default: artyom.say('Disculpe, no le he entendido... repita por favor');
+          }
+      }
+    });
+
+    artyom.addCommands({
+      indexes: ["accionar lámpara", "accionar ventilador"],
+      //smart: true,
+      action: (i, wildcard) => {
+          //$('#zenModeController').trigger('click');
+          switch(i) {
+            case 0: $('#lampController').click(); break;
+            case 1: $('#fanController').click(); break;
+            default: artyom.say('Disculpe, no le he entendido... repita por favor');
+          }
+      }
+    });
+
+    artyom.addCommands({
+      indexes: ['cerrar'],
+      action: () => {
+        console.log('Cerrando');
+        $('#zenModeModal').modal('hide');
+        $('#musicPlayerModal').modal('hide'); 
+      }
+    });
   });
 </script>
