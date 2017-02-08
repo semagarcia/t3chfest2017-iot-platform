@@ -50,7 +50,7 @@
     <script src="./js/libs/highcharts.js"></script>
     <script src="./js/libs/highcharts-more.js"></script>
     <script src="./js/utils/sema-utils.js"></script>
-    <script src="./js/libs/artyom.js"></script>
+    <script src="./js/libs/artyom.min.js"></script>
     <script>
         // Debug mode enabled
         window.semaDebugMode = false;
@@ -123,11 +123,11 @@
             });
 
             artyom.initialize({
-                continuous:true,
-                lang:"es-ES",
+                continuous: true,
+                lang: "es-ES",
                 obeyKeyword: "reconocimiento",  // reconocimiento + *comando*
-                listen:false,
-                debug:true
+                listen: true,
+                debug: true
             });
         });
 
