@@ -44,6 +44,20 @@
   </div>
 </div>
 
+<div class="row">
+  <div class="col-xs-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <span class="label label-warning" style="font-size: 20px">Ambiente bulb</span>
+        <button id="connectToBleBulb" style="float:right">Connect</button>
+      </div>
+      <div class="panel-body clickable" style="text-align:center;">
+        <img id="colorPickerController" src="./images/icon_lamp.png" class="col-sm-12 col-md-12" style="max-width:256px; float:none" />
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Modals -->
 <!-- musicPlayerModal -->
 <div class="modal fade" id="musicPlayerModal" tabindex="-1" role="dialog" aria-labelledby="musicModalLabel">
@@ -91,93 +105,136 @@
   </div>
 </div>
 
+<!-- colorPickerModal -->
+<div class="modal fade" id="colorPickerModal" tabindex="-1" role="dialog" aria-labelledby="colorPickerModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="colorPickerModal">Enable zen mode</h4>
+      </div>
+      <div class="modal-body">
+        <h1>Select the color:</h1>
+        <p style="text-align: center;">Color: <input id="colorPicker" type="color" /> <button id="selectColor">Select color</button></p> 
+        <p style="text-align: center;">Selected: <span id="currentColorPicker"></span></p>
+        <p style="text-align: center;"><button id="setBulbColor">Set color!</buton></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-  $(document).ready(() => {
-    $(document).attr('title', 'T3chFest 2017 - Plataforma IoT :: Applications');
+    $(document).ready(() => {
+        $(document).attr('title', 'T3chFest 2017 - Plataforma IoT :: Applications');
 
-    $('#lampController').click(function() { 
-      let stateImage = $(this).attr('src');
-      let newState = (stateImage.slice(stateImage.lastIndexOf('_') + 1, stateImage.lastIndexOf('.')) === 'on') ? 'off' : 'on';
-      semaUtils.sendX10Command('lamp', newState, function() {});
-      $(this).attr('src', (stateImage.indexOf('_on.') !== -1) ? stateImage.replace('_on.', '_off.') : stateImage.replace('_off.', '_on.'));
-    }); 
+        $('#lampController').click(function() { 
+            let stateImage = $(this).attr('src');
+            let newState = (stateImage.slice(stateImage.lastIndexOf('_') + 1, stateImage.lastIndexOf('.')) === 'on') ? 'off' : 'on';
+            semaUtils.sendX10Command('lamp', newState, function() {});
+            $(this).attr('src', (stateImage.indexOf('_on.') !== -1) ? stateImage.replace('_on.', '_off.') : stateImage.replace('_off.', '_on.'));
+        }); 
 
-    $('#musicPlayerController').click(() => { 
-      semaUtils.getSongList((songList) => {
-        $('#songList').empty();
-        songList.forEach((song) => {
-          $('#songList').append(`<li><a name="${song}" link="song" style="cursor:pointer">${song}</a></li>`);
+        $('#musicPlayerController').click(() => { 
+            semaUtils.getSongList((songList) => {
+                $('#songList').empty();
+                songList.forEach((song) => {
+                    $('#songList').append(`<li><a name="${song}" link="song" style="cursor:pointer">${song}</a></li>`);
+                });
+                $('a[link="song"]').click(function() {
+                    semaUtils.playSong($(this).attr('name'));
+                });
+                $('#musicPlayerModal').modal('show'); 
+            });
         });
-        $('a[link="song"]').click(function() {
-          semaUtils.playSong($(this).attr('name'));
-        });
-        $('#musicPlayerModal').modal('show'); 
+
+      $('#fwPlayer').click(() => {
+          semaUtils.forwardPlaying();
       });
-    });
 
-    $('#fwPlayer').click(() => {
-      semaUtils.forwardPlaying();
-    });
+      $('#stopPlayer').click(() => {
+          semaUtils.stopPlaying();
+      });
 
-    $('#stopPlayer').click(() => {
-      semaUtils.stopPlaying();
-    });
+      $('#fanController').click(function() { 
+          let stateImage = $(this).attr('src');
+          let newState = (stateImage.slice(stateImage.lastIndexOf('_') + 1, stateImage.lastIndexOf('.')) === 'on') ? 'off' : 'on';
+          semaUtils.sendX10Command('fan', newState, function() {});
+          $(this).attr('src', (stateImage.indexOf('_on.') !== -1) ? stateImage.replace('_on.', '_off.') : stateImage.replace('_off.', '_on.'));
+      });
 
-    $('#fanController').click(function() { 
-      let stateImage = $(this).attr('src');
-      let newState = (stateImage.slice(stateImage.lastIndexOf('_') + 1, stateImage.lastIndexOf('.')) === 'on') ? 'off' : 'on';
-      semaUtils.sendX10Command('fan', newState, function() {});
-      $(this).attr('src', (stateImage.indexOf('_on.') !== -1) ? stateImage.replace('_on.', '_off.') : stateImage.replace('_off.', '_on.'));
-    });
+      $('#zenModeController').click(() => { 
+          $('#zenModeModal').modal('show'); 
+      });
+      
+      $('#colorPickerController').click(() => {
+          $('#colorPickerModal').modal('show');
+      });
 
-    $('#zenModeController').click(() => { $('#zenModeModal').modal('show'); });
-    
-    console.log('Apps >> ', artyom.getAvailableCommands());
+      $('#selectColor').click(() => {
+          var color = ($('#colorPicker').val()).slice(1);
+          var R = parseInt(color.substring(0, 2), 16);
+          var G = parseInt(color.substring(2, 4), 16);
+          var B = parseInt(color.substring(4, 6), 16);
+          $('#currentColorPicker').text(`rgb(${R}, ${G}, ${B})`);
+      });
 
-    artyom.addCommands({
-      indexes: ['lanzar *'],
-      smart: true,
-      action: (i, wildcard) => {
-        switch(wildcard) {
-            case 'modo zen': $('#zenModeController').trigger('click'); break;
-            case 'reproductor': $('#musicPlayerController').trigger('click'); break;
-            default: artyom.say('Disculpe, no le he entendido... repita por favor');
+      $('#setBulbColor').click(() => {
+          if(R && G && B) {
+              semaUtils.setBulbColor(R, G, B);
+          } else {
+            $('#currentColorPicker').text('Error! You have to pick a color before.');
           }
-      }
-    });
+      });
 
-    artyom.addCommands({
-      indexes: ['reproducir música', 'siguiente canción', 'parar música'],
-      action: (i) => {
-        switch(i) {
-            case 0: semaUtils.forwardPlaying(); break;
-            case 1: semaUtils.forwardPlaying(); break;
-            case 2: semaUtils.stopPlaying(); break;
-            default: artyom.say('Disculpe, no le he entendido... repita por favor');
+      $('#connectToBleBulb').click(() => {
+          semaUtils.connectToBulb();
+      });
+
+      artyom.addCommands({
+          indexes: ['lanzar *'],
+          smart: true,
+          action: (i, wildcard) => {
+              switch(wildcard) {
+                  case 'modo zen': $('#zenModeController').trigger('click'); break;
+                  case 'reproductor': $('#musicPlayerController').trigger('click'); break;
+                  default: artyom.say('Disculpe, no le he entendido... repita por favor');
+              }
           }
-      }
-    });
+      });
 
-    artyom.addCommands({
-      indexes: ["accionar lámpara", "accionar ventilador"],
-      //smart: true,
-      action: (i, wildcard) => {
-          //$('#zenModeController').trigger('click');
-          switch(i) {
-            case 0: $('#lampController').click(); break;
-            case 1: $('#fanController').click(); break;
-            default: artyom.say('Disculpe, no le he entendido... repita por favor');
+      artyom.addCommands({
+          indexes: ['reproducir música', 'siguiente canción', 'parar música'],
+          action: (i) => {
+              switch(i) {
+                  case 0: semaUtils.forwardPlaying(); break;
+                  case 1: semaUtils.forwardPlaying(); break;
+                  case 2: semaUtils.stopPlaying(); break;
+                  default: artyom.say('Disculpe, no le he entendido... repita por favor');
+              }
           }
-      }
-    });
+      });
 
-    artyom.addCommands({
-      indexes: ['cerrar'],
-      action: () => {
-        console.log('Cerrando');
-        $('#zenModeModal').modal('hide');
-        $('#musicPlayerModal').modal('hide'); 
-      }
-    });
+      artyom.addCommands({
+          indexes: ['accionar lámpara', 'accionar ventilador'],
+          action: (i, wildcard) => {
+              //$('#zenModeController').trigger('click');
+              switch(i) {
+                  case 0: $('#lampController').click(); break;
+                  case 1: $('#fanController').click(); break;
+                  default: artyom.say('Disculpe, no le he entendido... repita por favor');
+              }
+          }
+      });
+
+      artyom.addCommands({
+          indexes: ['cerrar'],
+          action: () => {
+              $('#zenModeModal').modal('hide');
+              $('#musicPlayerModal').modal('hide'); 
+          }
+      });
   });
 </script>

@@ -39,7 +39,7 @@ window.semaUtils = (function () {
     /**
      * 
      */
-    utils.requestSensorState = (sensor, callback) => {
+    /*utils.requestSensorState = (sensor, callback) => {
         $.ajax({
             url: '/sensor/' + sensor,
             success: function(data) {
@@ -47,6 +47,21 @@ window.semaUtils = (function () {
             },
             cache: false
         });
+    };*/
+    utils.requestSensorState = (sensor, callback) => {
+        var promise = new Promise((resolve, reject) => {
+            $.ajax({
+                url: '/sensor/' + sensor,
+                success: (data) => {
+                    resolve(data);
+                },
+                error: (err) => {
+                    reject(err);
+                },
+                cache: false
+            });
+        });
+        return promise;
     };
 
     /**
@@ -146,6 +161,51 @@ window.semaUtils = (function () {
             },
             cache: false
         });
+    };
+
+    /**
+     * 
+     */
+    utils.connectToBulb = () => {
+        if(navigator.bluetooth) {
+            navigator.bluetooth.requestDevice({
+                filters: [{ services: [0xffe5] }]
+            })
+            .then(function(device) {
+                // Step 2: Connect to it
+                console.log('setp2: ', device);
+                return device.gatt.connect();
+            })
+            .then(function(server) {
+                // Step 3: Get the Service
+                console.log('setp3: ', server);
+                return server.getPrimaryService(0xffe5);
+            })
+            .then(function(service) {
+                // Step 4: get the Characteristic
+                console.log('setp4: ', service);
+                return service.getCharacteristic(0xffe9);
+            })
+            .then(function(characteristic) {
+                // Step 5: Write to the characteristic
+                console.log('setp5: ', characteristic);
+                var data = new Uint8Array([0xbb, 0x25, 0x05, 0x44]);
+                return characteristic.writeValue(data);
+            })
+            .catch(function(error) {
+                // And of course: error handling!
+                console.error('Connection failed! ', error);
+            });
+        } else {
+            alert('Error, bluetooth not supported or disconnected');
+        }
+    };
+
+    /**
+     * 
+     */
+    utils.setBulbColor = (r, g, b) => {
+        
     };
 
     return utils;
