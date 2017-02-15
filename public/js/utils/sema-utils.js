@@ -5,6 +5,11 @@ window.semaUtils = (function () {
     /**
      * 
      */
+    utils.serverMediaIP = '192.168.1.3:3000';
+
+    /**
+     * 
+     */
     utils.log = (traceMessage, level) => {
         if(window.semaDebugMode) {
             switch(level) {
@@ -37,18 +42,9 @@ window.semaUtils = (function () {
     };
 
     /**
-     * 
+     * (Implementation through a promise instead of callbacks)
      */
-    /*utils.requestSensorState = (sensor, callback) => {
-        $.ajax({
-            url: '/sensor/' + sensor,
-            success: function(data) {
-                callback(data);
-            },
-            cache: false
-        });
-    };*/
-    utils.requestSensorState = (sensor, callback) => {
+    utils.requestSensorState = (sensor) => {
         var promise = new Promise((resolve, reject) => {
             $.ajax({
                 url: '/sensor/' + sensor,
@@ -98,7 +94,7 @@ window.semaUtils = (function () {
     utils.sendX10Command = (device, action, callback) => {
         $.ajax({
             type: 'post',
-            url: 'http://192.168.12.70:3000/x10',
+            url: `${utils.serverMediaIP}/x10`,
             data: { 
                 device: device, 
                 action: action 
@@ -115,7 +111,7 @@ window.semaUtils = (function () {
      */
     utils.getSongList = (callback) => {
         $.ajax({
-            url: 'http://192.168.12.70:3000/library',
+            url: `${utils.serverMediaIP}/library`,
             success: function(data) {
                 callback(data);
             },
@@ -130,7 +126,7 @@ window.semaUtils = (function () {
         $.ajax({
             type: 'post',
             data: { song: song },
-            url: 'http://192.168.12.70:3000/library/play',
+            url: `${utils.serverMediaIP}/library/play`,
             success: function() { },
             error: function() { 
                 // Check if there was an error (erro handler)
@@ -144,7 +140,7 @@ window.semaUtils = (function () {
      */
     utils.stopPlaying = () => {
         $.ajax({
-            url: 'http://192.168.12.70:3000/library/stop',
+            url: `${utils.serverMediaIP}/library/stop`,
             success: function(data) {
             },
             cache: false
@@ -156,7 +152,7 @@ window.semaUtils = (function () {
      */
     utils.forwardPlaying = () => {
         $.ajax({
-            url: 'http://192.168.12.70:3000/library/forward',
+            url: `${utils.serverMediaIP}/library/forward`,
             success: function(data) {
             },
             cache: false
@@ -189,6 +185,7 @@ window.semaUtils = (function () {
             .then(function(characteristic) {
                 // Step 5: Write to the characteristic
                 console.log('setp5: ', characteristic);
+                utils.ledCharacteristic = characteristic;
                 var data = new Uint8Array([0xbb, 0x25, 0x05, 0x44]);
                 return characteristic.writeValue(data);
             })
@@ -205,7 +202,11 @@ window.semaUtils = (function () {
      * 
      */
     utils.setBulbColor = (r, g, b) => {
-        
+        if(utils.ledCharacteristic) {
+            let data = new Uint8Array([0x56, r, g, b, 0x00, 0xf0, 0xaa]);
+            return utils.ledCharacteristic.writeValue(data)
+                .catch(err => console.log('Error when writing value! ', err));
+        }
     };
 
     return utils;
